@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("access_token", data.access);
           localStorage.setItem("refresh_token", data.refresh);
           alert("Login successful!");
-          window.location.href = "../dashboard/dashboard.html";
+          window.location.href = "../dashboard.html";
         } else {
           const errorData = await response.json();
           alert("Login failed: " + (errorData.detail || "Invalid credentials"));
