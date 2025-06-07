@@ -324,3 +324,64 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   init();
 });
+
+// Create a new transaction entry
+async function createTransactionEntry(entryData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}api/entries/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+      body: JSON.stringify(entryData),
+    });
+
+    if (response.ok) {
+      const newTransaction = await response.json();
+      transactions.push(newTransaction); // Add new entry to transactions array
+      calculateFinancialSummary(); // Recalculate summary
+      showNotification("Transaction added successfully!");
+      return newTransaction;
+    } else {
+      const errorData = await response.json();
+      console.error("Failed to create transaction:", errorData);
+      showNotification("Failed to add transaction.", "error");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    showNotification(
+      "An error occurred while adding the transaction.",
+      "error"
+    );
+    return null;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const addTransactionBtn = document.getElementById("add-transaction");
+  const transactionModal = document.getElementById("transaction-modal");
+  const closeModalButtons = transactionModal.querySelectorAll(
+    ".close-modal, #cancel-transaction"
+  );
+
+  // Show modal when "Add Entry" button is clicked
+  addTransactionBtn.addEventListener("click", () => {
+    transactionModal.style.display = "block";
+  });
+
+  // Hide modal on close or cancel
+  closeModalButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      transactionModal.style.display = "none";
+    });
+  });
+
+  // Optional: Close modal if you click outside the modal content
+  window.addEventListener("click", (e) => {
+    if (e.target === transactionModal) {
+      transactionModal.style.display = "none";
+    }
+  });
+});
