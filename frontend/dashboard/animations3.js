@@ -323,6 +323,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   init();
+  await fetchTransactions();
 });
 
 // Create a new transaction entry
@@ -385,3 +386,94 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// Add this inside the DOMContentLoaded event listener
+transactionForm.addEventListener("submit", async (e) => {
+  e.preventDefault(); // Prevent default form submission
+
+  // Gather form data
+  const formData = {
+    entry_type: document.querySelector('input[name="entry_type"]:checked')
+      .value,
+    title: document.getElementById("transaction-title").value,
+    amount: parseFloat(document.getElementById("transaction-amount").value),
+    category: document.getElementById("transaction-category").value,
+    date: document.getElementById("transaction-date").value,
+    notes: document.getElementById("transaction-notes").value,
+  };
+
+  // Call API to create transaction
+  const newTransaction = await createTransactionEntry(formData);
+
+  if (newTransaction) {
+    // Close modal and reset form
+    transactionModal.style.display = "none";
+    transactionForm.reset();
+
+    // Add to UI immediately
+    transactions.push(newTransaction);
+    renderTransactions();
+    calculateFinancialSummary();
+  }
+});
+
+// Implement missing functions
+async function fetchTransactions() {
+  try {
+    const response = await fetch(`${API_BASE_URL}api/tracker/entries/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    });
+
+    if (response.ok) {
+      transactions = await response.json();
+      renderTransactions();
+      calculateFinancialSummary();
+    } else {
+      console.error("Failed to fetch transactions");
+    }
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+  }
+}
+
+function renderTransactions() {
+  const transactionsList = document.getElementById("transactions-list");
+  if (!transactionsList) return;
+
+  transactionsList.innerHTML = "";
+
+  transactions.forEach((transaction) => {
+    const transactionElement = document.createElement("div");
+    transactionElement.className = `transaction-item ${transaction.entry_type}`;
+    transactionElement.innerHTML = `
+      <div class="transaction-info">
+        <div class="transaction-icon">
+          <i class="fa-solid ${getCategoryIcon(transaction.category)}"></i>
+        </div>
+        <div class="transaction-details">
+          <h4>${transaction.title}</h4>
+          <p class="transaction-category">${transaction.category}</p>
+          <p class="transaction-date">${new Date(
+            transaction.date
+          ).toLocaleDateString()}</p>
+        </div>
+      </div>
+      <div class="transaction-amount">
+        <span>$${parseFloat(transaction.amount).toFixed(2)}</span>
+      </div>
+    `;
+    transactionsList.appendChild(transactionElement);
+  });
+}
+
+function getCategoryIcon(category) {
+  const icons = {
+    food: "fa-utensils",
+    travel: "fa-plane",
+    bills: "fa-file-invoice",
+    other: "fa-circle-dot",
+  };
+  return icons[category] || "fa-circle-dot";
+}
