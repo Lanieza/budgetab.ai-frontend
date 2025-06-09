@@ -3,7 +3,7 @@ const API_BASE_URL = "https://budgetab-ai-backend.onrender.com/";
 // Account Info API
 async function fetchAccountInfo() {
   try {
-    const response = await fetch(`${API_BASE_URL}api/accounts/me/`, {
+    const response = await fetch(`${API_BASE_URL}/api/accounts/me/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Create a new transaction entry
 async function createTransactionEntry(entryData) {
   try {
-    const response = await fetch(`${API_BASE_URL}api/entries/`, {
+    const response = await fetch(`${API_BASE_URL}/api/entries/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

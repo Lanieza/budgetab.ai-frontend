@@ -2,7 +2,7 @@ const API_BASE_URL = "https://budgetab-ai-backend.onrender.com/";
 // API
 async function fetchTransactions() {
   try {
-    const response = await fetch(`${API_BASE_URL}api/tracker/entries/`, {
+    const response = await fetch(`${API_BASE_URL}/api/tracker/entries/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
@@ -26,7 +26,7 @@ async function fetchTransactions() {
 
 async function fetchAccountInfo() {
   try {
-    const response = await fetch(`${API_BASE_URL}api/accounts/me/`, {
+    const response = await fetch(`${API_BASE_URL}/api/accounts/me/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
@@ -194,7 +194,7 @@ async function updateBudgetUI() {
 
 async function fetchBudgetLimits() {
   try {
-    const response = await fetch(`${API_BASE_URL}api/tracker/budget/`, {
+    const response = await fetch(`${API_BASE_URL}/api/tracker/budget/`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         "Content-Type": "application/json",
@@ -282,7 +282,7 @@ function initSliders() {
         const payload = { [key]: parseFloat(slider.value) };
 
         try {
-          const response = await fetch(`${API_BASE_URL}api/tracker/budget/`, {
+          const response = await fetch(`${API_BASE_URL}/api/tracker/budget/`, {
             method: "POST",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           return;
         }
 
-        const response = await fetch(`${API_BASE_URL}api/accounts/logout/`, {
+        const response = await fetch(`${API_BASE_URL}/api/accounts/logout/`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
