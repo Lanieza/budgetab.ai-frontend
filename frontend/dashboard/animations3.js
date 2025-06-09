@@ -247,6 +247,35 @@ document.addEventListener("DOMContentLoaded", async () => {
   const editTransactionForm = document.getElementById("edit-transaction-form");
   const transactionsList = document.getElementById("transactions-list");
 
+  transactionForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    // Gather form data
+    const formData = {
+      entry_type: document.querySelector('input[name="entry_type"]:checked')
+        .value,
+      title: document.getElementById("transaction-title").value,
+      amount: parseFloat(document.getElementById("transaction-amount").value),
+      category: document.getElementById("transaction-category").value,
+      date: document.getElementById("transaction-date").value,
+      notes: document.getElementById("transaction-notes").value,
+    };
+
+    // Call API to create transaction
+    const newTransaction = await createTransactionEntry(formData);
+
+    if (newTransaction) {
+      // Close modal and reset form
+      transactionModal.style.display = "none";
+      transactionForm.reset();
+
+      // Add to UI immediately
+      transactions.push(newTransaction);
+      renderTransactions();
+      calculateFinancialSummary();
+    }
+  });
+
   // Toggle sidebar with responsive behavior
   function toggleSidebar() {
     sidebar.classList.toggle("collapsed");
@@ -359,63 +388,6 @@ async function createTransactionEntry(entryData) {
     return null;
   }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const addTransactionBtn = document.getElementById("add-transaction");
-  const transactionModal = document.getElementById("transaction-modal");
-  const closeModalButtons = transactionModal.querySelectorAll(
-    ".close-modal, #cancel-transaction"
-  );
-
-  // Show modal when "Add Entry" button is clicked
-  addTransactionBtn.addEventListener("click", () => {
-    transactionModal.style.display = "block";
-  });
-
-  // Hide modal on close or cancel
-  closeModalButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      transactionModal.style.display = "none";
-    });
-  });
-
-  // Optional: Close modal if you click outside the modal content
-  window.addEventListener("click", (e) => {
-    if (e.target === transactionModal) {
-      transactionModal.style.display = "none";
-    }
-  });
-});
-
-// Add this inside the DOMContentLoaded event listener
-transactionForm.addEventListener("submit", async (e) => {
-  e.preventDefault(); // Prevent default form submission
-
-  // Gather form data
-  const formData = {
-    entry_type: document.querySelector('input[name="entry_type"]:checked')
-      .value,
-    title: document.getElementById("transaction-title").value,
-    amount: parseFloat(document.getElementById("transaction-amount").value),
-    category: document.getElementById("transaction-category").value,
-    date: document.getElementById("transaction-date").value,
-    notes: document.getElementById("transaction-notes").value,
-  };
-
-  // Call API to create transaction
-  const newTransaction = await createTransactionEntry(formData);
-
-  if (newTransaction) {
-    // Close modal and reset form
-    transactionModal.style.display = "none";
-    transactionForm.reset();
-
-    // Add to UI immediately
-    transactions.push(newTransaction);
-    renderTransactions();
-    calculateFinancialSummary();
-  }
-});
 
 // Implement missing functions
 async function fetchTransactions() {
